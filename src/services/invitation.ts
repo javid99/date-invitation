@@ -9,16 +9,7 @@ type SaveInvitationParams = {
 };
 
 export async function saveInvitation(data: SaveInvitationParams) {
-   const { error } = await supabase
-      .from("invitations")
-      .insert({
-         invite_token: "test-123",
-         accepted: true,
-         place: "Coffee",
-         day: "Friday",
-         time: "18:00",
-      })
-      .select();
+   const { error } = await supabase.from("invitations").insert(data).select();
 
    console.log(data);
    console.log(error);
