@@ -2,12 +2,25 @@ import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 
+import { useEffect } from "react";
+import FloatingHearts from "../../components/celebration/FloatingHearts";
 import GlassCard from "../../components/ui/GlassCard";
 import PageContainer from "../../components/ui/PageContainer";
-import FloatingHearts from "../../components/celebration/FloatingHearts";
+import { supabase } from "../../lib/supabase";
 
 export default function Celebration() {
    const { width, height } = useWindowSize();
+
+   useEffect(() => {
+      async function test() {
+         const { data, error } = await supabase.from("invitations").select("*");
+
+         console.log(data);
+         console.log(error);
+      }
+
+      test();
+   }, []);
 
    return (
       <>

@@ -8,12 +8,41 @@ import Button from "../../components/ui/Button";
 import { getPlace } from "../../constants/place";
 import { useDateStore } from "../../store/dateStore";
 
+import { saveInvitation } from "../../services/invitation";
+import { useState } from "react";
+
 export default function Summary() {
+   const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
    const { place, day, time } = useDateStore();
 
    const selectedPlace = getPlace(place);
+
+   const params = new URLSearchParams(window.location.search);
+   const inviteToken = params.get("invite") || crypto.randomUUID();
+
+   const handleConfirm = async () => {
+      if (loading) return;
+
+      setLoading(true);
+
+      try {
+         await saveInvitation({
+            invite_token: inviteToken,
+            accepted: true,
+            place: place!,
+            day: day!,
+            time: time!,
+         });
+
+         navigate("/celebration");
+      } catch (err) {
+         console.error(err);
+         alert("Something went wrong.");
+         setLoading(false);
+      }
+   };
 
    return (
       <PageContainer>
@@ -67,7 +96,16 @@ export default function Summary() {
                   }}
                   className="mt-8 sm:mt-10"
                >
-                  <Button onClick={() => navigate("/celebration")}>Confirm ❤️</Button>
+                  <Button disabled={loading} onClick={handleConfirm}>
+                     {loading ? (
+                        <div className="flex items-center gap-2">
+                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                           Planning our date...
+                        </div>
+                     ) : (
+                        "Confirm ❤️"
+                     )}
+                  </Button>
                </motion.div>
             </div>
          </GlassCard>
